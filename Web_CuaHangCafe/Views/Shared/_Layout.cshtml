@@ -1,0 +1,75 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="CafedeLiem">
+    <meta name="keywords" content="coffee, cafe">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"] | CafedeLiem</title>
+
+    <!--Favicon-->
+    <link rel="shortcut icon" href="~/favicon.ico" />
+
+    <!-- Icon Font Stylesheet -->
+
+    <!--Bootstrap-->
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" type="text/css">
+
+    <!--Font Awesome-->
+    <link rel="stylesheet" href="~/lib/fontawesome/css/all.min.css" />
+
+    <!--JQuery-->
+    <link rel="stylesheet" href="~/lib/jquery-ui/jquery-ui.min.css" type="text/css">
+    <link rel="stylesheet" href="~/lib/magnific-popup/dist/magnific-popup.css" type="text/css">
+    <link rel="stylesheet" href="~/lib/owl-carousel-2/dist/assets/owl.carousel.min.css" type="text/css">
+    <link rel="stylesheet" href="~/lib/owl-carousel-2/dist/assets/owl.theme.default.min.css" type="text/css">
+    <link rel="stylesheet" href="~/lib/slick-nav/dist/slicknav.min.css" type="text/css">
+
+    <!--CSS-->
+    <link rel="stylesheet" href="~/css/style.css" type="text/css" asp-append-version="true">
+    <link rel="stylesheet" href="~/css/style-additional.css" type="text/css" asp-append-version="true">
+
+</head>
+<body>
+    <!--Page Preloder-->
+    <partial name="_PreloaderPartial" />
+
+    <!--Header Section-->
+    <partial name="_HeaderPartial" />
+
+    <!--Main Body-->
+    @RenderBody()
+
+    <!--Instagram-->
+    <partial name="_InstagramPartial" />
+
+    <!--Footer Section-->
+    <partial name="_FooterPartial" />
+    
+    <!--Search-->
+    <!--<partial name="_SearchBoxPartial" />-->
+    
+    <!--Back to top -->
+    <partial name="_BackToTopPartial" />
+    
+    <!-- JavaScript Libraries -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/magnific-popup/dist/jquery.magnific-popup.min.js"></script>
+    <script src="~/lib/jquery-ui/jquery-ui.min.js"></script>
+    <script src="~/lib/mixitup/dist/mixitup.min.js"></script>
+    <script src="~/lib/jquery.countdown/jquery.countdown.min.js"></script>
+    <script src="~/lib/slick-nav/dist/jquery.slicknav.min.js"></script>
+    <script src="~/lib/owl-carousel-2/dist/owl.carousel.min.js"></script>
+    <script src="~/lib/jquery.nicescroll/dist/jquery.nicescroll.min.js"></script>
+
+    <script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
+
+    <script src="~/lib/fontawesome/js/all.min.js"></script>
+
+    <!--Template Javascript-->
+    <script src="~/js/main.js" asp-append-version="true"></script>
+    <script src="~/js/main-additional.js" asp-append-version="true"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

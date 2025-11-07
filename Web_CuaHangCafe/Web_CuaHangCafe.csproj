@@ -1,0 +1,114 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="Areas\Admin\Models\**" />
+    <Compile Remove="Migrations\**" />
+    <Content Remove="Areas\Admin\Models\**" />
+    <Content Remove="Migrations\**" />
+    <EmbeddedResource Remove="Areas\Admin\Models\**" />
+    <EmbeddedResource Remove="Migrations\**" />
+    <None Remove="Areas\Admin\Models\**" />
+    <None Remove="Migrations\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components.QuickGrid.EntityFrameworkAdapter" Version="8.0.17" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.17" />
+    <PackageReference Include="X.PagedList" Version="10.5.7" />
+    <PackageReference Include="X.PagedList.Mvc.Core" Version="10.5.7" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.17" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.17">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.7" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="wwwroot\lib\jquery.countdown\jquery.countdown.js" />
+    <None Include="wwwroot\lib\jquery.countdown\jquery.countdown.min.js" />
+    <None Include="wwwroot\lib\jquery.nicescroll\demo\js\jquery.nicescroll.min.js" />
+    <None Include="wwwroot\lib\jquery.nicescroll\dist\jquery.nicescroll.iframehelper.js" />
+    <None Include="wwwroot\lib\jquery.nicescroll\dist\jquery.nicescroll.iframehelper.min.js" />
+    <None Include="wwwroot\lib\jquery.nicescroll\dist\jquery.nicescroll.js" />
+    <None Include="wwwroot\lib\jquery.nicescroll\dist\jquery.nicescroll.min.js" />
+    <None Include="wwwroot\lib\jquery.nicescroll\jquery.nicescroll.iframehelper.js" />
+    <None Include="wwwroot\lib\jquery.nicescroll\jquery.nicescroll.iframehelper.min.js" />
+    <None Include="wwwroot\lib\jquery.nicescroll\jquery.nicescroll.js" />
+    <None Include="wwwroot\lib\jquery.nicescroll\jquery.nicescroll.min.js" />
+    <None Include="wwwroot\lib\jquery.nicescroll\MIT.LICENSE" />
+    <None Include="wwwroot\lib\jquery.nicescroll\README.md" />
+    <None Include="wwwroot\lib\magnific-popup\.gitignore" />
+    <None Include="wwwroot\lib\magnific-popup\.jshintrc" />
+    <None Include="wwwroot\lib\magnific-popup\.travis.yml" />
+    <None Include="wwwroot\lib\magnific-popup\dist\jquery.magnific-popup.js" />
+    <None Include="wwwroot\lib\magnific-popup\dist\jquery.magnific-popup.min.js" />
+    <None Include="wwwroot\lib\magnific-popup\Gruntfile.js" />
+    <None Include="wwwroot\lib\magnific-popup\libs\jquery-loader.js" />
+    <None Include="wwwroot\lib\magnific-popup\libs\jquery\jquery.js" />
+    <None Include="wwwroot\lib\magnific-popup\libs\qunit\qunit.js" />
+    <None Include="wwwroot\lib\magnific-popup\LICENSE" />
+    <None Include="wwwroot\lib\magnific-popup\README.md" />
+    <None Include="wwwroot\lib\magnific-popup\src\css\main.scss" />
+    <None Include="wwwroot\lib\magnific-popup\src\css\_settings.scss" />
+    <None Include="wwwroot\lib\magnific-popup\src\js\ajax.js" />
+    <None Include="wwwroot\lib\magnific-popup\src\js\core.js" />
+    <None Include="wwwroot\lib\magnific-popup\src\js\gallery.js" />
+    <None Include="wwwroot\lib\magnific-popup\src\js\iframe.js" />
+    <None Include="wwwroot\lib\magnific-popup\src\js\image.js" />
+    <None Include="wwwroot\lib\magnific-popup\src\js\inline.js" />
+    <None Include="wwwroot\lib\magnific-popup\src\js\retina.js" />
+    <None Include="wwwroot\lib\magnific-popup\src\js\zoom.js" />
+    <None Include="wwwroot\lib\magnific-popup\website\documentation.md" />
+    <None Include="wwwroot\lib\magnific-popup\website\third-party-libs\jquery.js" />
+    <None Include="wwwroot\lib\magnific-popup\website\third-party-libs\jquery.min.js" />
+    <None Include="wwwroot\lib\magnific-popup\website\third-party-libs\uglify.js" />
+    <None Include="wwwroot\lib\magnific-popup\website\third-party-libs\zepto.js" />
+    <None Include="wwwroot\lib\magnific-popup\website\third-party-libs\zepto.min.js" />
+    <None Include="wwwroot\lib\mixitup\.gitignore" />
+    <None Include="wwwroot\lib\mixitup\.jscsrc" />
+    <None Include="wwwroot\lib\mixitup\.jshintrc" />
+    <None Include="wwwroot\lib\mixitup\.travis.yml" />
+    <None Include="wwwroot\lib\mixitup\CHANGELOG.md" />
+    <None Include="wwwroot\lib\mixitup\dist\mixitup.js" />
+    <None Include="wwwroot\lib\mixitup\dist\mixitup.min.js" />
+    <None Include="wwwroot\lib\mixitup\gulpfile.js" />
+    <None Include="wwwroot\lib\mixitup\README.md" />
+    <None Include="wwwroot\lib\mixitup\tests\functional\main.js" />
+    <None Include="wwwroot\lib\mixitup\tests\mock\dom.js" />
+    <None Include="wwwroot\lib\mixitup\tests\mock\extension.js" />
+    <None Include="wwwroot\lib\mixitup\tests\unit\callbacks.js" />
+    <None Include="wwwroot\lib\mixitup\tests\unit\controls-filter.js" />
+    <None Include="wwwroot\lib\mixitup\tests\unit\controls-live.js" />
+    <None Include="wwwroot\lib\mixitup\tests\unit\controls-multimix.js" />
+    <None Include="wwwroot\lib\mixitup\tests\unit\controls-sort.js" />
+    <None Include="wwwroot\lib\mixitup\tests\unit\controls-toggle.js" />
+    <None Include="wwwroot\lib\mixitup\tests\unit\extension.js" />
+    <None Include="wwwroot\lib\mixitup\tests\unit\factory.js" />
+    <None Include="wwwroot\lib\mixitup\tests\unit\h.js" />
+    <None Include="wwwroot\lib\mixitup\tests\unit\main.js" />
+    <None Include="wwwroot\lib\mixitup\tests\unit\mixer-change-layout.js" />
+    <None Include="wwwroot\lib\mixitup\tests\unit\mixer-dataset.js" />
+    <None Include="wwwroot\lib\mixitup\tests\unit\mixer-filter.js" />
+    <None Include="wwwroot\lib\mixitup\tests\unit\mixer-get-config.js" />
+    <None Include="wwwroot\lib\mixitup\tests\unit\mixer-get-state.js" />
+    <None Include="wwwroot\lib\mixitup\tests\unit\mixer-insert.js" />
+    <None Include="wwwroot\lib\mixitup\tests\unit\mixer-multimix.js" />
+    <None Include="wwwroot\lib\mixitup\tests\unit\mixer-remove.js" />
+    <None Include="wwwroot\lib\mixitup\tests\unit\mixer-sort.js" />
+    <None Include="wwwroot\lib\mixitup\tests\unit\mixer-toggle-on-off.js" />
+    <None Include="wwwroot\lib\mixitup\tests\unit\queue.js" />
+    <None Include="wwwroot\lib\slick-nav\.gitattributes" />
+    <None Include="wwwroot\lib\slick-nav\.gitignore" />
+    <None Include="wwwroot\lib\slick-nav\dist\jquery.slicknav.js" />
+    <None Include="wwwroot\lib\slick-nav\dist\jquery.slicknav.min.js" />
+    <None Include="wwwroot\lib\slick-nav\gulpfile.js" />
+    <None Include="wwwroot\lib\slick-nav\jquery.slicknav.js" />
+    <None Include="wwwroot\lib\slick-nav\README.md" />
+    <None Include="wwwroot\lib\slick-nav\scss\core.scss" />
+    <None Include="wwwroot\lib\slick-nav\scss\slicknav.scss" />
+    <None Include="wwwroot\lib\slick-nav\scss\theme.scss" />
+  </ItemGroup>
+</Project>

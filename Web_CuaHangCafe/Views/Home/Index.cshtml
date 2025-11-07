@@ -1,0 +1,43 @@
+﻿@{
+    ViewData["Title"] = "Trang chủ";
+    ViewData["Home"] = "active";
+}
+
+@model Web_CuaHangCafe.ViewModels.HomeViewModel
+
+<!--News Section Begin-->
+<section class="product spad">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-4 col-md-4">
+                <div class="section-title">
+                    <h4>Tin tức nổi bật</h4>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            @foreach (var item in Model.lstTinTuc)
+            {
+                <div class="col-lg-4">
+                    <div class="blog__item">
+                        <div class="blog__item__pic set-bg" data-setbg=@Url.Content("../img/news/" + item.HinhAnh)></div>
+                        <div class="blog__item__text">
+                            <ul>
+                                <li>@item.NgayDang.Value.ToString("dd/MM/yyyy")</li>
+                            </ul>
+                            <h6>
+                                <a
+                                    asp-controller="news"
+                                    asp-action="details"
+                                    asp-route-maTinTuc="@item.MaTinTuc">@item.TieuDe
+                                </a>
+                            </h6>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+<!--News Section End-->
+
