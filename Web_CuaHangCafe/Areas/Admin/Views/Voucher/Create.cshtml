@@ -1,0 +1,63 @@
+﻿@model Web_CuaHangCafe.Models.TbVoucher
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@{
+    ViewData["Title"] = "Thêm Voucher";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="container">
+    <div class="page-header mb-4">
+        <h3>Thêm voucher mới</h3>
+    </div>
+
+    <div class="card" style="max-width:600px;">
+        <div class="card-body">
+            <form asp-action="Create" method="post">
+                @Html.AntiForgeryToken()
+
+                <div class="mb-3">
+                    <label class="form-label">Mã code <span class="text-danger">*</span></label>
+                    <input asp-for="MaCode" class="form-control text-uppercase"
+                           placeholder="Ví dụ: SALE10" required />
+                    <span asp-validation-for="MaCode" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Phần trăm giảm (%) <span class="text-danger">*</span></label>
+                    <input asp-for="PhanTramGiam" type="number" class="form-control"
+                           min="1" max="100" placeholder="Ví dụ: 10" required />
+                    <span asp-validation-for="PhanTramGiam" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Số tiền giảm tối đa (₫)</label>
+                    <input asp-for="SoTienGiamToiDa" type="number" class="form-control"
+                           placeholder="Để trống = không giới hạn" />
+                    <span asp-validation-for="SoTienGiamToiDa" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Ngày hết hạn <span class="text-danger">*</span></label>
+                    <input asp-for="NgayHetHan" type="date" class="form-control" required />
+                    <span asp-validation-for="NgayHetHan" class="text-danger"></span>
+                </div>
+
+                <div class="mb-4">
+                    <div class="form-check form-switch">
+                        <input type="checkbox" name="IsActive" value="true" class="form-check-input" checked />
+                        <input type="hidden" name="IsActive" value="false" />
+                        <label class="form-check-label">Kích hoạt ngay</label>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-plus"></i> Thêm voucher
+                    </button>
+                    <a asp-action="Index" class="btn btn-secondary">← Quay về</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

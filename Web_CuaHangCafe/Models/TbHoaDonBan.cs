@@ -16,6 +16,10 @@ public partial class TbHoaDonBan
     public Guid CustomerId { get; set; }
 
     public virtual TbKhachHang Customer { get; set; } = null!;
+    public int? MaVoucher { get; set; }
 
+    public string? TrangThai { get; set; }
+    public string? DiaChiGiaoHang {  get; set; }
+    public string? SoDienThoai { get; set; }
     public virtual ICollection<TbChiTietHoaDonBan> TbChiTietHoaDonBans { get; set; } = new List<TbChiTietHoaDonBan>();
 }

@@ -4,74 +4,121 @@
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 
 @{
-    ViewData["Title"] = "Quản lí hoá đơn";
+    ViewData["Title"] = "Quản lý đơn hàng";
     Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
 }
 
 <div class="container" style="margin-bottom:20px;">
-    <div class="row">
-        <div class="col-lg-8 col-md-12 col-sm-12">
-            <div class="page-header">
-                <h3 class="page-title">Quản lí hoá đơn</h3>
-            </div>
+    <div class="row align-items-center">
+        <div class="col-lg-5">
+            <h3 class="page-title">Quản lý đơn hàng</h3>
         </div>
-        <div class="col-lg-4 col-md-12 col-sm-12">
-            <div class="search-field">
-                @using (Html.BeginForm("Search", "Bill", FormMethod.Get))
-                {
-                    <div class="input-group">
-                        <input type="date" class="form-control" name="search" style="border:none" autocomplete="off" placeholder="Tìm kiếm">
-                        <button class="btn" type="submit"><i class="fa fa-search" aria-hidden="true"></i></button>
-                    </div>
-                }
-            </div>
+        <div class="col-lg-4">
+            @using (Html.BeginForm("Search", "Bill", FormMethod.Get))
+            {
+                <div class="input-group">
+                    <input type="text" class="form-control" name="search" placeholder="Tìm SĐT, số HĐ, ngày..." />
+                    <button class="btn btn-outline-secondary" type="submit"><i class="fa fa-search"></i></button>
+                </div>
+            }
+        </div>
+        <div class="col-lg-3">
+            <!-- Lọc theo trạng thái -->
+            @{
+                var tt = ViewBag.TrangThai as string ?? "";
+            }
+
+            <select class="form-select" onchange="location='?trangThai='+this.value">
+                <option value="" selected="@(tt == ""           ? "selected" : null)">-- Tất cả trạng thái --</option>
+                <option value="đã đặt" selected="@(tt == "đã đặt" ? "selected" : null)">Đã đặt</option>
+                <option value="đã xong" selected="@(tt == "đã xong"   ? "selected" : null)">Đã xong</option>
+                <option value="đang giao" selected="@(tt == "đang giao" ? "selected" : null)">Đang giao</option>
+                <option value="đã giao" selected="@(tt == "đã giao"   ? "selected" : null)">Đã giao</option>
+                <option value="đã hủy" selected="@(tt == "đã hủy"    ? "selected" : null)">Đã hủy</option>
+            </select>
         </div>
     </div>
 </div>
 
 <div class="container">
-    <div class="row">
-        <div class="table-responsive">
-            <table class="table">
-                <thead>
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>Số HĐ</th>
+                    <th>Ngày đặt</th>
+                    <th>Khách hàng</th>
+                    <th>SĐT</th>
+                    <th>Tổng tiền</th>
+                    <th>Trạng thái</th>
+                    <th>Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
                     <tr>
-                        <th>Mã hoá đơn</th>
-                        <th>Ngày bán</th>
-                        <th>Số điện thoại khách hàng</th>
-                        <th>Tổng tiền</th>
-                        <th>Thao tác</th>
+                        <td>@item.SoHoaDon</td>
+                        <td>@item.NgayBan?.ToString("dd/MM/yyyy HH:mm")</td>
+                        <td>@(item.Customer?.TenKhachHang ?? "—")</td>
+                        <td>@(item.SoDienThoai ?? item.Customer?.SdtkhachHang ?? "—")</td>
+                        <td>@item.TongTien?.ToString("n0") ₫</td>
+                        <td>
+                            @{
+                                var badge = item.TrangThai switch
+                                {
+                                    "đã đặt" => "warning",
+                                    "đã xong" => "info",
+                                    "đang giao" => "primary",
+                                    "đã giao" => "success",
+                                    "đã hủy" => "danger",
+                                    _ => "secondary"
+                                };
+                            }
+                            <span class="badge bg-@badge">@(item.TrangThai ?? "chưa rõ")</span>
+                        </td>
+                        <td>
+                            <a class="btn btn-sm btn-outline-primary"
+                               asp-action="Details" asp-route-id="@item.MaHoaDon">
+                                <i class="fa fa-eye"></i> Xem
+                            </a>
+                            @if (item.TrangThai == "đã đặt")
+                            {
+                                <button class="btn btn-sm btn-success btnApprove"
+                                        data-id="@item.MaHoaDon">
+                                    ✔ Duyệt
+                                </button>
+                            }
+                        </td>
                     </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model)
-                    {
-                        <tr>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.MaHoaDon)
-                            </td>
-                            <td>
-                                @(item.NgayBan.Value.ToString("dd/MM/yyyy"))
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.CustomerId)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.TongTien) &#8363;
-                            </td>
-                            <td>
-                                <a class="btn btn-primary btn-sm" asp-action="Details" asp-route-id="@item.MaHoaDon" asp-route-name="@item.MaHoaDon">Xem</a>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
+                }
+            </tbody>
+        </table>
     </div>
 
-    @Html.PagedListPager(Model, page=>Url.Action("index", new {page = page}), new PagedListRenderOptions()
-    {
-        MaximumPageNumbersToDisplay = 5,
-        LiElementClasses = new List<String> {"page-item"},
-        PageClasses = new List<String> {"page-link"}
-    })
+    @Html.PagedListPager(Model, page => Url.Action("index", new { page, trangThai = ViewBag.TrangThai }),
+        new PagedListRenderOptions
+        {
+            MaximumPageNumbersToDisplay = 5,
+            LiElementClasses = new List<string> { "page-item" },
+            PageClasses = new List<string> { "page-link" }
+        })
 </div>
+
+@section Scripts {
+    <script>
+    $(document).on("click", ".btnApprove", function () {
+        var id = $(this).data("id");
+        if (!confirm("Xác nhận duyệt đơn hàng này?")) return;
+
+        $.post("/Admin/Bill/Approve/" + id, function (res) {
+            if (res.success) {
+                alert(res.message);
+                location.reload();
+            } else {
+                alert("Lỗi: " + res.message);
+            }
+        });
+    });
+    </script>
+}

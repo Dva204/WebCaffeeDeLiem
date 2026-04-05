@@ -1,4 +1,10 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Http
+@{
+    var userName = Context.Session.GetString("UserName");
+}
+
+
+<!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
@@ -11,7 +17,6 @@
     <link rel="shortcut icon" href="~/favicon.ico" />
 
     <!-- Icon Font Stylesheet -->
-
     <!--Bootstrap-->
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" type="text/css">
 
@@ -45,13 +50,12 @@
 
     <!--Footer Section-->
     <partial name="_FooterPartial" />
-    
+
     <!--Search-->
     <!--<partial name="_SearchBoxPartial" />-->
-    
     <!--Back to top -->
     <partial name="_BackToTopPartial" />
-    
+
     <!-- JavaScript Libraries -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/magnific-popup/dist/jquery.magnific-popup.min.js"></script>
