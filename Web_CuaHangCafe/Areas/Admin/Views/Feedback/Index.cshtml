@@ -57,7 +57,13 @@
                             </td>
                             <td>
                                 <a class="btn btn-primary btn-sm" asp-action="Details" asp-route-id="@item.MaPhanHoi" asp-route-name="@item.TieuDe">Xem</a>
-                                <a class="btn btn-danger btn-sm" asp-action="Delete" asp-route-id="@item.MaPhanHoi">Xoá</a>
+                                <form asp-action="Delete" method="post" style="display:inline">
+                                    <input type="hidden" name="id" value="@item.MaPhanHoi" />
+                                    <button type="submit" class="btn btn-danger btn-sm"
+                                            onclick="return confirm('Xóa phản hồi này?')">
+                                        Xóa
+                                    </button>
+                                </form>
                             </td>
                         </tr>
                     }

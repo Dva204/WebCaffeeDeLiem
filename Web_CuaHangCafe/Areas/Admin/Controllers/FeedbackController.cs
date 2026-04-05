@@ -61,17 +61,22 @@ namespace Web_CuaHangCafe.Areas.Admin.Controllers
 
         [Route("Delete")]
         [Authentication]
-        [HttpGet]
+        [HttpPost]
         public IActionResult Delete(int id)
         {
-            TempData["Message"] = "";
+            var phanHoi = _context.TbPhanHois.SingleOrDefault(x => x.MaPhanHoi == id);
 
-            _context.Remove(_context.TbPhanHois.Find(id));
+            if (phanHoi == null)
+            {
+                TempData["Message"] = "Không tìm thấy phản hồi";
+                return RedirectToAction("Index", "Feedback");
+            }
+
+            _context.TbPhanHois.Remove(phanHoi);
             _context.SaveChanges();
 
             TempData["Message"] = "Xoá thành công";
-
-            return RedirectToAction("Index", "Fee_contextack");
+            return RedirectToAction("Index", "Feedback");  // ← sửa tên đúng
         }
     }
 }

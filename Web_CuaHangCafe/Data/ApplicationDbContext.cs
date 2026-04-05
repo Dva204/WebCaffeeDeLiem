@@ -108,13 +108,13 @@ public class ApplicationDbContext : DbContext
 
         modelBuilder.Entity<TbPhanHoi>(entity =>
         {
-            entity
-                .HasNoKey()
-                .ToTable("tbPhanHoi");
+            entity.HasKey(e => e.MaPhanHoi);      
+            entity.ToTable("tbPhanHoi");
 
             entity.Property(e => e.MaPhanHoi).ValueGeneratedOnAdd();
             entity.Property(e => e.SoDienThoai).HasMaxLength(10);
             entity.Property(e => e.TieuDe).HasMaxLength(50);
+            entity.Property(e => e.KhachHangId).IsRequired(false);
         });
 
         modelBuilder.Entity<TbQuanTriVien>(entity =>
