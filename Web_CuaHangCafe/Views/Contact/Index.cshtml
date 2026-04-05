@@ -59,29 +59,27 @@
                     <div class="contact__form">
                         <h5>Gửi lời nhắn</h5>
                         <p class="@TempData["Status"]">@TempData["Message"]</p>
-                        <form asp-action="index">
+                        <form asp-action="index" method="post">
+                            @Html.AntiForgeryToken()
                             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                            <input
-                                asp-for="TieuDe"
-                                type="text"
-                                class="form-control"
-                                maxlength="50"
-                                placeholder="Tiêu đề"
-                                autocomplete="off"
-                                required />
-                            <input
-                                asp-for="SoDienThoai"
-                                type="tel"
-                                class="form-control"
-                                maxlength="10"
-                                placeholder="Số điện thoại"
-                                autocomplete="off"
-                                required />
-                            <textarea
-                                asp-for="NoiDung"
-                                class="form-control"
-                                placeholder="Lời nhắn"
-                                required>
+                            <input asp-for="TieuDe"
+                                   type="text"
+                                   class="form-control"
+                                   maxlength="50"
+                                   placeholder="Tiêu đề"
+                                   autocomplete="off"
+                                   required />
+                            <input asp-for="SoDienThoai"
+                                   type="tel"
+                                   class="form-control"
+                                   maxlength="10"
+                                   placeholder="Số điện thoại"
+                                   autocomplete="off"
+                                   required />
+                            <textarea asp-for="NoiDung"
+                                      class="form-control"
+                                      placeholder="Lời nhắn"
+                                      required>
                             </textarea>
                             <button type="submit" value="Create" class="site-btn">Gửi lời nhắn</button>
                         </form>

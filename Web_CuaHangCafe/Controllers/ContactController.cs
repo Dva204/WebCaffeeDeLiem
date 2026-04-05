@@ -22,22 +22,36 @@ namespace Web_CuaHangCafe.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Index(TbPhanHoi phanHoi)
         {
+            // Bỏ validate KhachHangId vì sẽ tự gán bên dưới
+            ModelState.Remove("KhachHangId");
+
             if (ModelState.IsValid)
             {
                 try
                 {
+                    // Nếu đang đăng nhập thì gắn KhachHangId
+                    var userEmail = HttpContext.Session.GetString("UserEmail");
+                    if (!string.IsNullOrEmpty(userEmail))
+                    {
+                        var khachHang = _context.TbKhachHangs
+                            .FirstOrDefault(k => k.Email == userEmail);
+                        if (khachHang != null)
+                            phanHoi.KhachHangId = khachHang.Id;
+                    }
+
                     _context.TbPhanHois.Add(phanHoi);
                     _context.SaveChanges();
+
                     TempData["Status"] = "success";
                     TempData["Message"] = "Gửi thành công";
                     return RedirectToAction("index");
                 }
-                catch
+                catch (Exception ex)
                 {
                     TempData["Status"] = "error";
-                    TempData["Message"] = "Không gửi được lời nhắn";
+                    TempData["Message"] = "Không gửi được lời nhắn: " + ex.Message;
                 }
-            }  
+            }
 
             return View(phanHoi);
         }
