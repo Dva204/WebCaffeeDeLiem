@@ -9,7 +9,7 @@ public class ShoppingCartSummaryViewComponent : ViewComponent
     public async Task<IViewComponentResult> InvokeAsync()
     {
         var cartItems = HttpContext.Session.Get<List<CartItem>>("Cart");
-        var cartItemCount = (cartItems != null) ? cartItems.Count : 0;
+        var cartItemCount = (cartItems != null) ? cartItems.Sum(x => x.SoLuong) : 0;
 
         return View(cartItemCount);
     }

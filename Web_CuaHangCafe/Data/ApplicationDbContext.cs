@@ -32,6 +32,7 @@ public class ApplicationDbContext : DbContext
 
     public DbSet<TbTinTuc> TbTinTucs { get; set; }
 
+    public DbSet<TbVoucher> tbVouchers { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<TbChiTietHoaDonBan>(entity =>
@@ -66,11 +67,16 @@ public class ApplicationDbContext : DbContext
             entity.Property(e => e.NgayBan).HasColumnType("datetime");
             entity.Property(e => e.SoHoaDon).HasMaxLength(14);
             entity.Property(e => e.TongTien).HasColumnType("money");
-
+            entity.Property(e => e.MaVoucher).IsRequired(false);
             entity.HasOne(d => d.Customer).WithMany(p => p.TbHoaDonBans)
                 .HasForeignKey(d => d.CustomerId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__tbHoaDonB__Custo__45F365D3");
+            entity.HasOne<TbVoucher>()
+                .WithMany()
+                .HasForeignKey(e => e.MaVoucher)
+                .OnDelete(DeleteBehavior.SetNull)
+                .HasConstraintName("FK_tbHoaDonBan_tbVoucher");
         });
 
         modelBuilder.Entity<TbKhachHang>(entity =>
@@ -84,6 +90,8 @@ public class ApplicationDbContext : DbContext
                 .HasMaxLength(10)
                 .HasColumnName("SDTKhachHang");
             entity.Property(e => e.TenKhachHang).HasMaxLength(50);
+            entity.Property(e => e.Email).HasMaxLength(50);
+            entity.Property(e => e.MatKhau).HasMaxLength(50);
         });
 
         modelBuilder.Entity<TbNhomSanPham>(entity =>
@@ -142,6 +150,16 @@ public class ApplicationDbContext : DbContext
             entity.ToTable("tbTinTuc");
 
             entity.Property(e => e.TieuDe).HasMaxLength(255);
+        });
+
+        modelBuilder.Entity<TbVoucher>(entity =>
+        {
+            entity.HasKey(e => e.MaVoucher).HasName("PK__tbVouche__0AAC5B111FA9B96E");
+            entity.ToTable("tbVoucher");
+            entity.Property(e => e.MaCode).HasMaxLength(50);
+            entity.Property(e => e.PhanTramGiam).HasColumnType("decimal(5, 2)");
+            entity.Property(e => e.SoTienGiamToiDa).HasColumnType("decimal(18,2)");
+            entity.Property(e => e.NgayHetHan).HasColumnType("datetime");
         });
     }
 }

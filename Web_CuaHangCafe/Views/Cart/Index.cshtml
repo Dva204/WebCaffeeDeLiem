@@ -22,7 +22,6 @@
     </div>
 </div>
 <!-- Breadcrumb End -->
-
 <!-- Shop Cart Section Begin -->
 <section class="shop-cart spad">
     <div class="container">
@@ -102,10 +101,30 @@
         <div class="row">
             <div class="col-lg-4 offset-lg-8">
                 <div class="cart__total__procced">
-                    <h6>Tổng tiền</h6>
-                    <ul>
-                        <li>Tổng <span id="totalAmount">@ViewData["total"] &#8363</span></li>
-                    </ul>
+                    @*<h6>Tổng tiền</h6>
+                        <ul>
+                            <li>Tổng <span id="totalAmount">@ViewData["total"] &#8363</span></li>
+                        </ul>*@
+                    <div class="voucher-section mt-4">
+                        <h5>Mã giảm giá</h5>
+                        <!--Danh sách voucher có sẵn-->
+                        <div id="voucherList" class="d-flex flex-wrap gap-2 mb-3"></div>
+                        <!--Nhập bằng tay-->
+                        <div class="input-group" style="max-width: 400px;">
+                            <input type="text" id="voucherInput" class="form-control"
+                                   placeholder="Nhập mã voucher...." />
+                            <button type="button" class="site-btn" id="applyVoucherBtn">Áp dụng</button>
+                        </div>
+                        <div id="voucherMessage" class="mt-2"></div>
+                    </div>
+                    <!--Tổng tiền-->
+                    <div class="cart-total mt-3">
+                        <p>Tạm tính : <strong id="tongTienGoc">@ViewData["total"] ₫</strong></p>
+                        <p id="discountRow" style="display:none; color:#ca1515;">
+                            Giảm giá : -<strong id="soTienGiam"></strong> ₫
+                        </p>
+                        <h5>Tổng cộng : <strong id="tongSauGiam">@ViewData["total"] ₫</strong></h5>
+                    </div>
                     <a asp-action="checkout" id="checkoutLink" class="primary-btn">Thanh toán</a>
                 </div>
             </div>
@@ -113,3 +132,55 @@
     </div>
 </section>
 <!-- Shop Cart Section End -->
+
+
+@section Scripts{
+    <script>
+        $(document).ready(function () {
+
+            // Load danh sách voucher
+            $.get("/cart/getVouchers", function (res) {
+                if (res.success && res.vouchers.length > 0) {
+                    res.vouchers.forEach(function (v) {
+                        $("#voucherList").append(
+                            `<span class="voucher-chip" data-code="${v.maCode}">
+                                🏷 ${v.maCode} — Giảm ${v.phanTramGiam}%
+                            </span>`
+                        );
+                    });
+                } else {
+                    $("#voucherList").html('<small class="text-muted">Không có voucher nào.</small>');
+                }
+            });
+
+            // Click chọn voucher từ danh sách
+            $(document).on("click", ".voucher-chip", function () {
+                $(".voucher-chip").removeClass("selected");
+                $(this).addClass("selected");
+                $("#voucherInput").val($(this).data("code"));
+            });
+
+            // Áp dụng voucher
+            $("#applyVoucherBtn").on("click", function () {
+                var code = $("#voucherInput").val().trim();
+                if (!code) return;
+
+                $.get("/cart/applyvoucher", { maCode: code }, function (res) {
+                    if (res.success) {
+                        $("#voucherMessage").html(
+                            `<span class="text-success">✔ Áp dụng thành công! Giảm ${res.phanTramGiam}%</span>`
+                        );
+                        $("#discountRow").show();
+                        $("#soTienGiam").text(res.soTienGiam);
+                        $("#tongSauGiam").text(res.tongSauGiam + " ₫");
+                    } else {
+                        $("#voucherMessage").html(
+                            `<span class="text-danger">✘ ${res.message}</span>`
+                        );
+                    }
+                });
+            });
+
+        });
+    </script>
+}

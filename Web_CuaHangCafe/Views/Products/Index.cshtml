@@ -58,14 +58,11 @@
                                             </a>
                                         </li>
                                         <li>
-                                            <a
-                                                asp-controller="cart"
-                                                asp-action="add"
-                                                asp-route-id="@item.MaSanPham"
-                                                asp-route-quantity=1>
-                                                    <span>
-                                                        <i class="fas fa-shopping-cart"></i>
-                                                    </span>
+                                            <a href="#" class="add-to-cart"
+                                               data-id="@item.MaSanPham">
+                                                <span>
+                                                    <i class="fas fa-shopping-cart"></i>
+                                                </span>
                                             </a>
                                         </li>
                                     </ul>

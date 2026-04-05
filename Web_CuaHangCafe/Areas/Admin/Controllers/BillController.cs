@@ -21,11 +21,27 @@ namespace Web_CuaHangCafe.Areas.Admin.Controllers
         [Route("")]
         [Route("Index")]
         [Authentication]
-        public IActionResult Index(int? page)
+        public IActionResult Index(int? page, string? trangThai)
         {
-            int pageSize = 30;
+            int pageSize = 15;
             int pageNumber = page == null || page < 0 ? 1 : page.Value;
-            var listItem = _context.TbHoaDonBans.AsNoTracking().OrderByDescending(x => x.NgayBan).ToList();
+
+            ViewBag.TrangThai = trangThai;
+
+            var query = _context.TbHoaDonBans
+                .Include(x => x.Customer)
+                .AsNoTracking()
+                .OrderByDescending(x => x.NgayBan)
+                .AsQueryable();
+
+            if (!string.IsNullOrEmpty(trangThai))
+            {
+                query = query.Where(x => x.TrangThai == trangThai);
+            }
+
+
+
+            var listItem = query.ToList();
             PagedList<TbHoaDonBan> pagedListItem = new PagedList<TbHoaDonBan>(listItem, pageNumber, pageSize);
 
             return View(pagedListItem);
@@ -36,30 +52,80 @@ namespace Web_CuaHangCafe.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult Search(int? page, string search)
         {
-            int pageSize = 30;
+            int pageSize = 15;
             int pageNumber = page == null || page < 0 ? 1 : page.Value;
 
             ViewBag.search = search;
 
-            var listItem = _context.TbHoaDonBans.AsNoTracking().Where(x => x.NgayBan.Value.ToString().Contains(search)).OrderBy(x => x.MaHoaDon).ToList();
-            PagedList<TbHoaDonBan> pagedListItem = new PagedList<TbHoaDonBan>(listItem, pageNumber, pageSize);
+            var listItem = _context.TbHoaDonBans
+                .Include(x => x.Customer)
+                .AsNoTracking()
+                .Where(x => x.NgayBan.Value.ToString().Contains(search)
+                         || x.SoDienThoai.Contains(search)
+                         || x.SoHoaDon.Contains(search))
+                .OrderByDescending(x => x.NgayBan)
+                .ToList();
 
+            PagedList<TbHoaDonBan> pagedListItem = new PagedList<TbHoaDonBan>(listItem, pageNumber, pageSize);
             return View(pagedListItem);
         }
 
-        [Route("Details")]
+        [Route("Details/{id}")]
         [Authentication]
         [HttpGet]
-        public IActionResult Details(int? page, string id, string name)
+        public IActionResult Details(string id)
         {
-            int pageSize = 30;
-            int pageNumber = page == null || page < 0 ? 1 : page.Value;
-            var listItem = _context.TbChiTietHoaDonBans.AsNoTracking().Where(x => x.MaHoaDon == Guid.Parse(id)).OrderBy(x => x.MaHoaDon).ToList();
-            PagedList<TbChiTietHoaDonBan> pagedListItem = new PagedList<TbChiTietHoaDonBan>(listItem, pageNumber, pageSize);
+            var maHoaDon = Guid.Parse(id);
 
-            ViewBag.name = name;
+            var hoaDon = _context.TbHoaDonBans
+                .Include(x => x.Customer)
+                .FirstOrDefault(x => x.MaHoaDon == maHoaDon);
 
-            return View(pagedListItem);
+            if (hoaDon == null) return NotFound();
+
+            var chiTiet = _context.TbChiTietHoaDonBans
+                .Include(x => x.MaSanPhamNavigation)
+                .Where(x => x.MaHoaDon == maHoaDon)
+                .ToList();
+
+            ViewBag.HoaDon = hoaDon;
+            ViewBag.ChiTiet = chiTiet;
+
+            return View();
+        }
+
+        [Route("Approve/{id}")]
+        [Authentication]
+        [HttpPost]
+        public IActionResult Approve(string id)
+        {
+            var hoaDon = _context.TbHoaDonBans.Find(Guid.Parse(id));
+            if (hoaDon == null)
+                return Json(new { success = false, message = "Không tìm thấy đơn hàng" });
+
+            if (hoaDon.TrangThai != "đã đặt")
+                return Json(new { success = false, message = "Đơn hàng đã được xử lý trước đó" });
+
+            hoaDon.TrangThai = "đã xong";
+            _context.SaveChanges();
+
+            return Json(new { success = true, message = "Duyệt đơn hàng thành công" });
+        }
+
+        [Route("UpdateStatus/{id}")]
+        [Authentication]
+        [HttpPost]
+        public IActionResult UpdateStatus(string id, string trangThai)
+        {
+            var validStatuses = new[] { "đã xong", "đang giao", "đã giao", "đã hủy" };
+            if (!validStatuses.Contains(trangThai)) return Json(new { success = false, message = "Trạng thái không hợp lệ" });
+
+            var hoaDon = _context.TbHoaDonBans.Find(Guid.Parse(id));
+            if (hoaDon == null) return Json(new { success = false, message = "Không tìm thấy đơn hàng" });
+
+            hoaDon.TrangThai = trangThai;
+            _context.SaveChanges();
+            return Json(new { success = true, message = $"Đã cập nhật : {trangThai}" });
         }
     }
 }

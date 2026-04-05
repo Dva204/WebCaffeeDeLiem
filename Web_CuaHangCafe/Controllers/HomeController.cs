@@ -26,6 +26,9 @@ namespace Web_CuaHangCafe.Controllers
             value.lstSanPham = lstProducts;
             value.lstTinTuc = lstNews;
 
+
+
+
             return View(value);
         }
 

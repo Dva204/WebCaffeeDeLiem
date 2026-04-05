@@ -1,6 +1,7 @@
-﻿<a asp-controller="cart" asp-action="index" title="Giỏ hàng">
-    <span>
-        <i class="fas fa-shopping-cart"></i>
-    </span>
-    <div id="cartTip" class="tip">@Model</div>
+﻿<a asp-controller="Cart" asp-action="Index" class="cart-widget" id="cartWidgetBtn">
+    <div class="cart-icon-wrap">
+        <i class="fas fa-shopping-bag"></i>
+        <span class="cart-count">@Model</span>
+    </div>
+    <span class="cart-ripple"></span>
 </a>

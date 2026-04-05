@@ -1,0 +1,59 @@
+﻿@model Web_CuaHangCafe.Models.TbVoucher
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@{
+    ViewData["Title"] = "Chi tiết Voucher";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="container">
+    <div class="page-header mb-4">
+        <h3>Chi tiết voucher: <strong>@Model.MaCode</strong></h3>
+    </div>
+
+    <div class="card" style="max-width:500px;">
+        <div class="card-body">
+            <table class="table table-borderless">
+                <tr>
+                    <th style="width:45%">Mã code</th>
+                    <td><strong>@Model.MaCode</strong></td>
+                </tr>
+                <tr>
+                    <th>Phần trăm giảm</th>
+                    <td>@Model.PhanTramGiam%</td>
+                </tr>
+                <tr>
+                    <th>Giảm tối đa</th>
+                    <td>
+                        @(Model.SoTienGiamToiDa.HasValue
+                            ? Model.SoTienGiamToiDa.Value.ToString("n0") + " ₫"
+                            : "Không giới hạn")
+                    </td>
+                </tr>
+                <tr>
+                    <th>Ngày hết hạn</th>
+                    <td>@Model.NgayHetHan.ToString("dd/MM/yyyy")</td>
+                </tr>
+                <tr>
+                    <th>Trạng thái</th>
+                    <td>
+                        @if (Model.NgayHetHan < DateTime.Now)
+                        {
+                            <span class="badge bg-secondary">Hết hạn</span>
+                        }
+                        else if (Model.IsActive == true)
+                        {
+                            <span class="badge bg-success">Đang hoạt động</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-warning text-dark">Tạm dừng</span>
+                        }
+                    </td>
+                </tr>
+            </table>
+
+            <a asp-action="Index" class="btn btn-secondary mt-2">← Quay về</a>
+        </div>
+    </div>
+</div>

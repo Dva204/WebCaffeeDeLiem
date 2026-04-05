@@ -1,0 +1,140 @@
+﻿@using Web_CuaHangCafe.Models
+@using X.PagedList.Mvc.Core
+@model X.PagedList.IPagedList<TbVoucher>
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@{
+    ViewData["Title"] = "Quản lý Voucher";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="container" style="margin-bottom:20px;">
+    <div class="row align-items-center">
+        <div class="col-lg-8">
+            <h3 class="page-title">Quản lý Voucher</h3>
+        </div>
+        <div class="col-lg-4 text-end">
+            <a asp-action="Create" class="btn btn-success">
+                <i class="fas fa-plus"></i> Thêm voucher mới
+            </a>
+        </div>
+    </div>
+</div>
+
+@if (TempData["success"] != null)
+{
+    <div class="container">
+        <div class="alert alert-success alert-dismissible fade show">
+            @TempData["success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    </div>
+}
+
+<div class="container">
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>Mã code</th>
+                    <th>Giảm (%)</th>
+                    <th>Giảm tối đa</th>
+                    <th>Hết hạn</th>
+                    <th>Trạng thái</th>
+                    <th>Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var v in Model)
+                {
+                    bool hetHan = v.NgayHetHan < DateTime.Now;
+                    <tr>
+                        <td><strong>@v.MaCode</strong></td>
+                        <td>@v.PhanTramGiam%</td>
+                        <td>
+                            @(v.SoTienGiamToiDa.HasValue
+                                ? v.SoTienGiamToiDa.Value.ToString("n0") + " ₫"
+                                : "Không giới hạn")
+                        </td>
+                        <td>
+                            <span class="@(hetHan ? "text-danger" : "")">
+                                @v.NgayHetHan.ToString("dd/MM/yyyy")
+                            </span>
+                        </td>
+                        <td>
+                            @if (hetHan)
+                            {
+                                <span class="badge bg-secondary">Hết hạn</span>
+                            }
+                            else if (v.IsActive == true)
+                            {
+                                <span class="badge bg-success">Đang hoạt động</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-warning text-dark">Tạm dừng</span>
+                            }
+                        </td>
+                        <td class="d-flex gap-2">
+                            <a asp-action="Details" asp-route-id="@v.MaVoucher"
+                               class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-eye"></i> Xem
+                            </a>
+                            @if (!hetHan)
+                            {
+                                <button class="btn btn-sm @(v.IsActive==true ? "btn-outline-warning" : "btn-outline-success") btnToggle"
+                                        data-id="@v.MaVoucher">
+                                    @(v.IsActive == true ? "Tạm dừng" : "Kích hoạt")
+                                </button>
+                            }
+                            <button class="btn btn-sm btn-outline-danger btnDelete"
+                                    data-id="@v.MaVoucher" data-code="@v.MaCode">
+                                <i class="fas fa-trash"></i> Xóa
+                            </button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    @Html.PagedListPager(Model, page => Url.Action("Index", new { page }),
+        new PagedListRenderOptions
+        {
+            MaximumPageNumbersToDisplay = 5,
+            LiElementClasses = new List<string> { "page-item" },
+            PageClasses = new List<string> { "page-link" }
+        })
+</div>
+
+@section Scripts {
+    <script>
+    // Xóa voucher
+    $(document).on("click", ".btnDelete", function () {
+        var id = $(this).data("id");
+        var code = $(this).data("code");
+        if (!confirm(`Xóa voucher "${code}"?`)) return;
+
+        $.post("/Admin/Voucher/Delete/" + id, function (res) {
+            if (res.success) {
+                alert(res.message);
+                location.reload();
+            } else {
+                alert("Không thể xóa: " + res.message);
+            }
+        });
+    });
+
+    // Bật/tắt kích hoạt
+    $(document).on("click", ".btnToggle", function () {
+        var id = $(this).data("id");
+        var btn = $(this);
+
+        $.post("/Admin/Voucher/ToggleActive/" + id, function (res) {
+            if (res.success) {
+                location.reload();
+            }
+        });
+    });
+    </script>
+}

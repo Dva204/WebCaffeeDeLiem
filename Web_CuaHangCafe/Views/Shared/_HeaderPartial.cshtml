@@ -1,4 +1,10 @@
-﻿ <!--Offcanvas Menu Begin-->
+﻿@using Microsoft.AspNetCore.Http
+@{
+    var userName = Context.Session.GetString("UserName");
+}
+
+
+<!--Offcanvas Menu Begin-->
 <div class="offcanvas-menu-overlay"></div>
 
 <div class="offcanvas-menu-wrapper">
@@ -20,6 +26,22 @@
         <li>
             @await Component.InvokeAsync("ShoppingCartSummary")
         </li>
+        @if (userName != null)
+        {
+            <li>👤 @userName</li>
+            <li>
+                <a asp-controller="Account" asp-action="Logout">Đăng xuất</a>
+            </li>
+        }
+        else
+        {
+            <li>
+                <a asp-controller="Account" asp-action="Login">Đăng nhập</a>
+            </li>
+            <li>
+                <a asp-controller="Account" asp-action="Register">Đăng ký</a>
+            </li>
+        }
     </ul>
 
     <div id="mobile-menu-wrap"></div>
@@ -59,6 +81,32 @@
                         <li>
                             @await Component.InvokeAsync("ShoppingCartSummary")
                         </li>
+                        @if (userName != null)
+                        {
+                            <li>
+                                <span style="color:#333; font-weight:500;">
+                                    👤 @userName
+                                </span>
+                            </li>
+                            <li>
+                                <a asp-controller="Login" asp-action="Logout" style="color:red">
+                                    Đăng xuất
+                                </a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li>
+                                <a asp-controller="Login" asp-action="Login">
+                                    Đăng nhập
+                                </a>
+                            </li>
+                            <li>
+                                <a asp-controller="Login" asp-action="Register">
+                                    Đăng ký
+                                </a>
+                            </li>
+                        }
                     </ul>
                 </div>
             </div>

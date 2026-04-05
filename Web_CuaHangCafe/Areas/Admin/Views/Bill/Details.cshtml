@@ -1,74 +1,97 @@
 ﻿@using Web_CuaHangCafe.Models
-@using X.PagedList.Mvc.Core;
-@model X.PagedList.IPagedList<TbChiTietHoaDonBan>
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Chi tiết đơn hàng";
     Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+    var hoaDon = ViewBag.HoaDon as TbHoaDonBan;
+    var chiTiet = ViewBag.ChiTiet as List<TbChiTietHoaDonBan>;
 }
 
-<div class="container" style="margin-bottom:20px;">
-    <div class="row">
-        <div class="col-lg-8 col-md-12 col-sm-12">
-            <div class="page-header">
-                <h3 class="page-title">Chi tiết hoá đơn bán: <span style="color:#666;text-transform:capitalize;">@ViewBag.name</span></h3>
+<div class="container">
+    <div class="page-header mb-3">
+        <h3>Chi tiết đơn hàng — Số HĐ: <strong>@hoaDon?.SoHoaDon</strong></h3>
+    </div>
+
+    <!-- Thông tin đơn -->
+    <div class="card mb-4">
+        <div class="card-body row">
+            <div class="col-md-6">
+                <p><strong>Khách hàng:</strong> @hoaDon?.Customer?.TenKhachHang</p>
+                <p><strong>SĐT:</strong> @(hoaDon?.SoDienThoai ?? hoaDon?.Customer?.SdtkhachHang)</p>
+                <p><strong>Địa chỉ giao hàng:</strong> @hoaDon?.DiaChiGiaoHang</p>
+            </div>
+            <div class="col-md-6">
+                <p><strong>Ngày đặt:</strong> @hoaDon?.NgayBan?.ToString("dd/MM/yyyy HH:mm")</p>
+                <p><strong>Tổng tiền:</strong> @hoaDon?.TongTien?.ToString("n0") ₫</p>
+                <p>
+                    <strong>Trạng thái:</strong>
+                    <span id="trangThaiLabel" class="badge bg-info fs-6">@hoaDon?.TrangThai</span>
+                </p>
             </div>
         </div>
     </div>
-</div>
 
-<div class="container">
-    <div class="row">
-        <div class="table-responsive">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Mã hoá đơn</th>
-                        <th>Mã sản phẩm</th>
-                        <th>Giá bán</th>
-                        <th>Giảm giá</th>
-                        <th>Số lượng</th>
-                        <th>Thành tiền</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model)
-                    {
-                        <tr>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.MaHoaDon)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.MaSanPham)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.GiaBan)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.GiamGia)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.SoLuong)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.ThanhTien) &#8363;
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+    <!-- Cập nhật trạng thái -->
+    <div class="card mb-4">
+        <div class="card-body d-flex gap-2 flex-wrap">
+            <strong class="me-2 align-self-center">Cập nhật trạng thái:</strong>
+            @foreach (var tt in new[] { "đã xong", "đang giao", "đã giao", "đã hủy" })
+            {
+                <button class="btn btn-outline-secondary btnUpdateStatus"
+                        data-id="@hoaDon?.MaHoaDon"
+                        data-trangthai="@tt">
+                    @tt
+                </button>
+            }
         </div>
     </div>
 
-    @Html.PagedListPager(Model, page=>Url.Action("Details", new {page = page}), new PagedListRenderOptions()
-    {
-        MaximumPageNumbersToDisplay = 5,
-        LiElementClasses = new List<String> {"page-item"},
-        PageClasses = new List<String> {"page-link"}
-    })
+    <!-- Chi tiết sản phẩm -->
+    <div class="table-responsive">
+        <table class="table table-bordered">
+            <thead class="table-dark">
+                <tr>
+                    <th>Sản phẩm</th>
+                    <th>Giá bán</th>
+                    <th>Giảm giá</th>
+                    <th>Số lượng</th>
+                    <th>Thành tiền</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in chiTiet)
+                {
+                    <tr>
+                        <td>@(item.MaSanPhamNavigation?.TenSanPham ?? item.MaSanPham.ToString())</td>
+                        <td>@item.GiaBan?.ToString("n0") ₫</td>
+                        <td>@(item.GiamGia > 0 ? item.GiamGia?.ToString("n0") + " ₫" : "—")</td>
+                        <td>@item.SoLuong</td>
+                        <td>@item.ThanhTien?.ToString("n0") ₫</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <a asp-action="Index" class="btn btn-secondary mt-3">← Quay về</a>
 </div>
 
-<div>
-    <a asp-action="Index">Quay về</a>
-</div>
+@section Scripts {
+    <script>
+    $(document).on("click", ".btnUpdateStatus", function () {
+        var id = $(this).data("id");
+        var trangThai = $(this).data("trangthai");
+        if (!confirm(`Cập nhật trạng thái thành "${trangThai}"?`)) return;
+
+        $.post(`/Admin/Bill/UpdateStatus/${id}`, { trangThai: trangThai }, function (res) {
+            if (res.success) {
+                $("#trangThaiLabel").text(trangThai);
+                alert(res.message);
+            } else {
+                alert("Lỗi: " + res.message);
+            }
+        });
+    });
+    </script>
+}

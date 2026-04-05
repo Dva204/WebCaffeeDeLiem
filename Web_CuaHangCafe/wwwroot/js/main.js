@@ -232,4 +232,146 @@ Created: Colorib
         $(this).addClass('active');
     });
 
+
+    /* ============================================
+       ADD TO CART — hiệu ứng đầy đủ
+       ============================================ */
+
+    // Tạo toast 1 lần, dùng lại
+    if ($('.cart-toast').length === 0) {
+        $('body').append('<div class="cart-toast"><i class="fas fa-check-circle"></i><span>Đã thêm vào giỏ hàng</span></div>');
+    }
+
+    $(document).on("click", ".add-to-cart", function (e) {
+        e.preventDefault();
+
+        var btn = $(this);
+        var productId = btn.data("id");
+
+        // Feedback ngay lập tức trên nút
+        btn.addClass('adding');
+        setTimeout(function () { btn.removeClass('adding'); }, 300);
+
+        $.ajax({
+            url: "/cart/add",
+            type: "POST",
+            data: { id: productId, quantity: 1 },
+            success: function (res) {
+                if (res.requireLogin) {
+                    window.location.href = res.redirectUrl;
+                    return;
+                }
+                if (res.success) {
+                    // Cập nhật badge
+                    $(".cart-count").text(res.count);
+
+                    // Hiệu ứng dot bay vào giỏ
+                    flyDotToCart(btn);
+
+                    // Hiệu ứng giỏ hàng nảy
+                    bumpCart();
+
+                    // Toast thông báo
+                    showCartToast();
+                }
+            }
+        });
+    });
+
+    /* -- Dot nhỏ bay từ sản phẩm đến giỏ -- */
+    function flyDotToCart(btn) {
+        var cartBtn = $("#cartWidgetBtn");
+        if (cartBtn.length === 0) cartBtn = $(".header__right__widget");
+        if (cartBtn.length === 0) return;
+
+        // Điểm XUẤT PHÁT: tâm của thẻ sản phẩm (.product__item)
+        var productItem = btn.closest(".product__item");
+        var startEl = productItem.length ? productItem : btn;
+        var startOffset = startEl.offset();
+        var startX = startOffset.left + startEl.outerWidth() / 2;
+        var startY = startOffset.top + startEl.outerHeight() / 2;
+
+        // Điểm KẾT THÚC: tâm của icon giỏ hàng
+        var endOffset = cartBtn.offset();
+        var endX = endOffset.left + cartBtn.outerWidth() / 2;
+        var endY = endOffset.top + cartBtn.outerHeight() / 2;
+
+        // Tạo nhiều dot để tạo cảm giác "vệt"
+        var dotCount = 3;
+        for (var i = 0; i < dotCount; i++) {
+            (function (delay) {
+                setTimeout(function () {
+                    var dot = $('<div class="fly-dot"></div>').css({
+                        left: startX - 7,
+                        top: startY - 7
+                    }).appendTo('body');
+
+                    // Dùng requestAnimationFrame để animate mượt
+                    var startTime = null;
+                    var duration = 550;
+
+                    // Điểm điều khiển cung bay (bezier thủ công)
+                    var ctrlX = (startX + endX) / 2 + (Math.random() - 0.5) * 100;
+                    var ctrlY = Math.min(startY, endY) - 80 - Math.random() * 60;
+
+                    function animateDot(timestamp) {
+                        if (!startTime) startTime = timestamp;
+                        var progress = Math.min((timestamp - startTime) / duration, 1);
+                        var ease = 1 - Math.pow(1 - progress, 3); // ease-out cubic
+
+                        // Quadratic bezier
+                        var t = ease;
+                        var x = Math.pow(1 - t, 2) * startX + 2 * (1 - t) * t * ctrlX + Math.pow(t, 2) * endX;
+                        var y = Math.pow(1 - t, 2) * startY + 2 * (1 - t) * t * ctrlY + Math.pow(t, 2) * endY;
+
+                        var scale = 1 - progress * 0.6;
+                        dot.css({
+                            left: x - 7,
+                            top: y - 7,
+                            transform: 'scale(' + scale + ')',
+                            opacity: 1 - progress * 0.3
+                        });
+
+                        if (progress < 1) {
+                            requestAnimationFrame(animateDot);
+                        } else {
+                            dot.remove();
+                        }
+                    }
+                    requestAnimationFrame(animateDot);
+                }, delay);
+            })(i * 80);
+        }
+    }
+
+    /* -- Hiệu ứng bump trên icon giỏ hàng -- */
+    function bumpCart() {
+        var cartWidget = $("#cartWidgetBtn");
+        if (cartWidget.length === 0) return;
+
+        cartWidget.removeClass('cart--bump');
+        // reflow để reset animation
+        void cartWidget[0].offsetWidth;
+        cartWidget.addClass('cart--bump');
+
+        cartWidget.one('animationend webkitAnimationEnd', function () {
+            cartWidget.removeClass('cart--bump');
+        });
+        // Fallback nếu event không trigger
+        setTimeout(function () {
+            cartWidget.removeClass('cart--bump');
+        }, 600);
+    }
+
+    /* -- Toast thông báo nhỏ -- */
+    var toastTimer;
+    function showCartToast() {
+        var toast = $('.cart-toast');
+        clearTimeout(toastTimer);
+        toast.addClass('show');
+        toastTimer = setTimeout(function () {
+            toast.removeClass('show');
+        }, 2200);
+    }
+
 })(jQuery);
