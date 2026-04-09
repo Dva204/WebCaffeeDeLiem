@@ -1,0 +1,83 @@
+﻿@model List<Web_CuaHangCafe.Models.TbHoaDonBan>
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@{
+    ViewData["Title"] = "Đơn hàng của tôi";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!-- Breadcrumb -->
+<div class="breadcrumb-option">
+    <div class="container">
+        <div class="breadcrumb__links">
+            <a asp-controller="home" asp-action="index"><i class="fa-solid fa-house"></i> Trang chủ</a>
+            <a asp-controller="Account" asp-action="Profile">Hồ sơ</a>
+            <span>Đơn hàng của tôi</span>
+        </div>
+    </div>
+</div>
+
+<section class="spad">
+    <div class="container">
+        <h4 class="mb-4">Đơn hàng của tôi</h4>
+
+        @if (!Model.Any())
+        {
+            <p class="text-muted">Bạn chưa có đơn hàng nào.</p>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Số HĐ</th>
+                            <th>Ngày đặt</th>
+                            <th>Tổng tiền</th>
+                            <th>Địa chỉ giao</th>
+                            <th>Trạng thái</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var order in Model)
+                        {
+                            
+
+                                var (badgeColor, icon) = order.TrangThai switch
+                                {
+                                    "chờ duyệt" => ("warning", "⏳"),
+                                    "đã xong" => ("info", "✅"),
+                                    "đang giao" => ("primary", "🚚"),
+                                    "đã giao" => ("success", "🎉"),
+                                    "đã hủy" => ("danger", "❌"),
+                                    _ => ("secondary", "❓")
+                                };
+                            
+                            <tr>
+                                <td><strong>#@order.SoHoaDon</strong></td>
+                                <td>@order.NgayBan?.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td>@order.TongTien?.ToString("n0") ₫</td>
+                                <td>@(order.DiaChiGiaoHang ?? "—")</td>
+                                <td>
+                                    <span class="badge bg-@badgeColor">
+                                        @icon @order.TrangThai
+                                    </span>
+                                </td>
+                                <td>
+                                    <a asp-action="OrderDetail"
+                                       asp-route-id="@order.MaHoaDon"
+                                       class="btn btn-sm btn-outline-primary">
+                                        Xem chi tiết
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+
+        <a asp-action="Profile" class="btn btn-secondary mt-3">← Quay về hồ sơ</a>
+    </div>
+</section>
