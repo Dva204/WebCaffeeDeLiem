@@ -28,9 +28,28 @@
         </li>
         @if (userName != null)
         {
-            <li>👤 @userName</li>
-            <li>
-                <a asp-controller="Account" asp-action="Logout">Đăng xuất</a>
+            <li class="nav-item dropdown" style="list-style: none; display: inline-block;">
+                <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="color:#333; font-weight:500;">
+                    👤 @userName
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                    <li>
+                        <a class="dropdown-item" asp-controller="Account" asp-action="Profile">
+                            <i class="fas fa-user"></i> Hồ sơ cá nhân
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" asp-controller="Account" asp-action="Orders">
+                            <i class="fas fa-list-ul"></i> Đơn hàng của tôi
+                        </a>
+                    </li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li>
+                        <a class="dropdown-item text-danger" asp-controller="Login" asp-action="Logout">
+                            <i class="fas fa-sign-out-alt"></i> Đăng xuất
+                        </a>
+                    </li>
+                </ul>
             </li>
         }
         else
@@ -83,15 +102,28 @@
                         </li>
                         @if (userName != null)
                         {
-                            <li>
-                                <span style="color:#333; font-weight:500;">
+                            <li class="nav-item dropdown" style="list-style: none; display: inline-block;">
+                                <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="color:#333; font-weight:500;">
                                     👤 @userName
-                                </span>
-                            </li>
-                            <li>
-                                <a asp-controller="Login" asp-action="Logout" style="color:red">
-                                    Đăng xuất
                                 </a>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                    <li>
+                                        <a class="dropdown-item" asp-controller="Account" asp-action="Profile">
+                                            <i class="fas fa-user"></i> Hồ sơ cá nhân
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" asp-controller="Account" asp-action="Orders">
+                                            <i class="fas fa-list-ul"></i> Đơn hàng của tôi
+                                        </a>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <a class="dropdown-item text-danger" asp-controller="Login" asp-action="Logout">
+                                            <i class="fas fa-sign-out-alt"></i> Đăng xuất
+                                        </a>
+                                    </li>
+                                </ul>
                             </li>
                         }
                         else

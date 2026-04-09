@@ -1,0 +1,132 @@
+﻿@using Web_CuaHangCafe.Models
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@{
+    ViewData["Title"] = "Chi tiết đơn hàng";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var hoaDon = ViewBag.HoaDon as TbHoaDonBan;
+    var chiTiet = ViewBag.ChiTiet as List<TbChiTietHoaDonBan>;
+
+    var (badgeColor, icon) = hoaDon?.TrangThai switch
+    {
+        "chờ duyệt" => ("warning", "⏳"),
+        "đã xong" => ("info", "✅"),
+        "đang giao" => ("primary", "🚚"),
+        "đã giao" => ("success", "🎉"),
+        "đã hủy" => ("danger", "❌"),
+        _ => ("secondary", "❓")
+    };
+}
+
+<!-- Breadcrumb -->
+<div class="breadcrumb-option">
+    <div class="container">
+        <div class="breadcrumb__links">
+            <a asp-controller="home" asp-action="index"><i class="fa-solid fa-house"></i> Trang chủ</a>
+            <a asp-controller="Account" asp-action="Orders">Đơn hàng</a>
+            <span>#@hoaDon?.SoHoaDon</span>
+        </div>
+    </div>
+</div>
+
+<section class="spad">
+    <div class="container">
+
+        <!-- Thông tin đơn hàng -->
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Đơn hàng #@hoaDon?.SoHoaDon</h5>
+                <span class="badge bg-@badgeColor fs-6">@icon @hoaDon?.TrangThai</span>
+            </div>
+            <div class="card-body row">
+                <div class="col-md-6">
+                    <p><strong>Ngày đặt:</strong> @hoaDon?.NgayBan?.ToString("dd/MM/yyyy HH:mm")</p>
+                    <p><strong>Địa chỉ giao:</strong> @(hoaDon?.DiaChiGiaoHang ?? "—")</p>
+                    <p><strong>SĐT:</strong> @(hoaDon?.SoDienThoai ?? "—")</p>
+                </div>
+                <div class="col-md-6">
+                    <p>
+                        <strong>Tổng tiền:</strong>
+                        <span style="color:#ca1515; font-size:1.1rem;">
+                            @hoaDon?.TongTien?.ToString("n0") ₫
+                        </span>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Timeline trạng thái -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <h6 class="mb-3">Trạng thái đơn hàng</h6>
+                <div class="d-flex justify-content-between text-center">
+                    @{
+                        var steps = new[] { "chờ duyệt", "đã xong", "đang giao", "đã giao" };
+                        var current = hoaDon?.TrangThai ?? "";
+                        var currentIdx = Array.IndexOf(steps, current);
+                    }
+                    @for (int i = 0; i < steps.Length; i++)
+                    {
+                        var isActive = i <= currentIdx && current != "đã hủy";
+                        var isCurrent = steps[i] == current;
+                        <div class="flex-fill">
+                            <div class="rounded-circle mx-auto mb-1 d-flex align-items-center justify-content-center"
+                                 style="width:36px;height:36px;
+                                        background:@(isActive ? "#ca1515" : "#ddd");
+                                        color:white; font-weight:bold;">
+                                @(i + 1)
+                            </div>
+                            <small style="color:@(isCurrent ? "#ca1515" : isActive ? "#333" : "#999");
+                                         font-weight:@(isCurrent ? "bold" : "normal")">
+                                @steps[i]
+                            </small>
+                        </div>
+                        @if (i < steps.Length - 1)
+                        {
+                            <div class="align-self-start mt-2" style="flex:0 0 30px;
+                                 border-top:2px solid @(i < currentIdx && current != "đã hủy" ? "#ca1515" : "#ddd");
+                                 margin-top:18px !important;"></div>
+                        }
+                    }
+                </div>
+                @if (current == "đã hủy")
+                {
+                    <p class="text-danger text-center mt-3 mb-0">❌ Đơn hàng đã bị hủy</p>
+                }
+            </div>
+        </div>
+
+        <!-- Chi tiết sản phẩm -->
+        <div class="table-responsive mb-4">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Sản phẩm</th>
+                        <th>Đơn giá</th>
+                        <th>Số lượng</th>
+                        <th>Thành tiền</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in chiTiet)
+                    {
+                        <tr>
+                            <td>@(item.MaSanPhamNavigation?.TenSanPham ?? "Sản phẩm #" + item.MaSanPham)</td>
+                            <td>@item.GiaBan?.ToString("n0") ₫</td>
+                            <td>@item.SoLuong</td>
+                            <td>@item.ThanhTien?.ToString("n0") ₫</td>
+                        </tr>
+                    }
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="3" class="text-end"><strong>Tổng cộng:</strong></td>
+                        <td><strong style="color:#ca1515">@hoaDon?.TongTien?.ToString("n0") ₫</strong></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
+        <a asp-action="Orders" class="btn btn-secondary">← Quay về đơn hàng</a>
+    </div>
+</section>

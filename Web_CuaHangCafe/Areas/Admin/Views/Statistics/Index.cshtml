@@ -1,0 +1,301 @@
+﻿@{
+    ViewData["Title"] = "Thống kê doanh số";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<!-- Header -->
+<div class="container" style="margin-bottom:20px;">
+    <div class="row align-items-center">
+        <div class="col-lg-5">
+            <h3 class="page-title">Thống kê doanh số</h3>
+        </div>
+        <div class="col-lg-7 d-flex gap-2 justify-content-end">
+            <select id="selYear" class="form-select" style="max-width:120px;">
+                @foreach (var y in (List<int>)ViewBag.Years)
+                {
+                    <option value="@y" selected="@(y == (int)ViewBag.SelectedYear ? "selected" : null)">
+                        Năm @y
+                    </option>
+                }
+            </select>
+            <select id="selMonth" class="form-select" style="max-width:130px;">
+                @for (int m = 1; m <= 12; m++)
+                {
+                    <option value="@m" selected="@(m == (int)ViewBag.SelectedMonth ? "selected" : null)">
+                        Tháng @m
+                    </option>
+                }
+            </select>
+            <button class="btn btn-danger" id="btnFilter">Xem</button>
+        </div>
+    </div>
+</div>
+
+<!-- KPI Cards -->
+<div class="container mb-4">
+    <div class="row g-3" id="kpiCards">
+        <div class="col-lg-3 col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body d-flex align-items-center gap-3">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center"
+                         style="width:52px;height:52px;background:#fff3cd;">
+                        <i class="fas fa-dollar-sign fa-lg" style="color:#e6a817;"></i>
+                    </div>
+                    <div>
+                        <div class="text-muted small">Doanh thu tháng</div>
+                        <div class="fw-bold fs-5" id="kpiDoanhThu">
+                            @string.Format("{0:n0}", (decimal)ViewBag.TongDoanhThu) ₫
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body d-flex align-items-center gap-3">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center"
+                         style="width:52px;height:52px;background:#d1ecf1;">
+                        <i class="fas fa-receipt fa-lg" style="color:#0c7a90;"></i>
+                    </div>
+                    <div>
+                        <div class="text-muted small">Tổng đơn hàng</div>
+                        <div class="fw-bold fs-5" id="kpiTongDon">@ViewBag.TongDonHang</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body d-flex align-items-center gap-3">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center"
+                         style="width:52px;height:52px;background:#d4edda;">
+                        <i class="fas fa-check-circle fa-lg" style="color:#28a745;"></i>
+                    </div>
+                    <div>
+                        <div class="text-muted small">Đã giao thành công</div>
+                        <div class="fw-bold fs-5" id="kpiHoanThanh">@ViewBag.DonHoanThanh</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body d-flex align-items-center gap-3">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center"
+                         style="width:52px;height:52px;background:#f8d7da;">
+                        <i class="fas fa-clock fa-lg" style="color:#ca1515;"></i>
+                    </div>
+                    <div>
+                        <div class="text-muted small">Chờ duyệt</div>
+                        <div class="fw-bold fs-5" id="kpiChorDuyet">@ViewBag.DonChorDuyet</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Biểu đồ -->
+<div class="container mb-4">
+    <div class="row g-3">
+
+        <!-- Doanh thu theo ngày -->
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-0 pt-3">
+                    <h6 class="mb-0">
+                        Doanh thu theo ngày
+                        <span class="text-muted small" id="chartTitle">
+                            — Tháng @ViewBag.SelectedMonth/@ViewBag.SelectedYear
+                        </span>
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <canvas id="lineChart" height="100"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pie chart trạng thái -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-0 pt-3">
+                    <h6 class="mb-0">Trạng thái đơn hàng</h6>
+                </div>
+                <div class="card-body">
+                    <canvas id="pieChart" height="185"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Doanh thu 12 tháng -->
+        <div class="col-lg-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-0 pt-3">
+                    <h6 class="mb-0">Doanh thu cả năm @ViewBag.SelectedYear</h6>
+                </div>
+                <div class="card-body">
+                    <canvas id="barChart" height="60"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Top 5 sản phẩm -->
+<div class="container mb-5">
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white border-0 pt-3">
+            <h6 class="mb-0">Top 5 sản phẩm bán chạy tháng @ViewBag.SelectedMonth/@ViewBag.SelectedYear</h6>
+        </div>
+        <div class="card-body p-0">
+            <table class="table mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>#</th>
+                        <th>Sản phẩm</th>
+                        <th>Số lượng bán</th>
+                        <th>Doanh thu</th>
+                    </tr>
+                </thead>
+                <tbody id="top5Table">
+                    @{
+                        int rank = 1;
+                        var medals = new[] { "🥇", "🥈", "🥉", "4️⃣", "5️⃣" };
+                    }
+                    @foreach (dynamic item in ViewBag.Top5)
+                    {
+                        <tr>
+                            <td>@medals[rank - 1]</td>
+                            <td>@item.TenSanPham</td>
+                            <td>@item.TongSoLuong</td>
+                            <td>@string.Format("{0:n0}", (decimal)item.TongTien) ₫</td>
+                        </tr>
+                        rank++;
+                    }
+                    @if (rank == 1)
+                    {
+                        <tr><td colspan="4" class="text-center text-muted py-3">Không có dữ liệu</td></tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+    // ── Dữ liệu ban đầu từ server ────────────────────────────────
+    var lineLabels  = @Html.Raw(ViewBag.ChartLabels);
+    var lineData    = @Html.Raw(ViewBag.ChartData);
+    var monthLabels = @Html.Raw(ViewBag.MonthLabels);
+    var monthData   = @Html.Raw(ViewBag.MonthData);
+    var pieLabels   = @Html.Raw(ViewBag.PieLabels);
+    var pieData     = @Html.Raw(ViewBag.PieData);
+
+    // ── Line chart: doanh thu theo ngày ─────────────────────────
+    const lineCtx = document.getElementById('lineChart').getContext('2d');
+    const lineChart = new Chart(lineCtx, {
+        type: 'line',
+        data: {
+            labels: lineLabels,
+            datasets: [{
+                label: 'Doanh thu (₫)',
+                data: lineData,
+                borderColor: '#ca1515',
+                backgroundColor: 'rgba(202,21,21,0.08)',
+                tension: 0.4,
+                fill: true,
+                pointRadius: 3
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: {
+                    ticks: {
+                        callback: v => new Intl.NumberFormat('vi-VN').format(v) + ' ₫'
+                    }
+                }
+            }
+        }
+    });
+
+    // ── Bar chart: doanh thu 12 tháng ────────────────────────────
+    const barCtx = document.getElementById('barChart').getContext('2d');
+    const barChart = new Chart(barCtx, {
+        type: 'bar',
+        data: {
+            labels: monthLabels,
+            datasets: [{
+                label: 'Doanh thu (₫)',
+                data: monthData,
+                backgroundColor: monthData.map((_, i) =>
+                    i === (@ViewBag.SelectedMonth - 1) ? '#ca1515' : 'rgba(202,21,21,0.3)')
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: {
+                    ticks: {
+                        callback: v => new Intl.NumberFormat('vi-VN').format(v) + ' ₫'
+                    }
+                }
+            }
+        }
+    });
+
+    // ── Pie chart: trạng thái đơn hàng ───────────────────────────
+    const pieCtx = document.getElementById('pieChart').getContext('2d');
+    const pieChart = new Chart(pieCtx, {
+        type: 'doughnut',
+        data: {
+            labels: pieLabels,
+            datasets: [{
+                data: pieData,
+                backgroundColor: ['#ffc107','#17a2b8','#007bff','#28a745','#dc3545','#6c757d']
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { position: 'bottom', labels: { font: { size: 11 } } } }
+        }
+    });
+
+    // ── Lọc theo tháng/năm (AJAX, không reload trang) ────────────
+    document.getElementById('btnFilter').addEventListener('click', function () {
+        var nam   = document.getElementById('selYear').value;
+        var thang = document.getElementById('selMonth').value;
+
+        fetch(`/Admin/Statistics/GetMonthData?nam=${nam}&thang=${thang}`)
+            .then(r => r.json())
+            .then(res => {
+                // Cập nhật line chart
+                lineChart.data.labels   = res.labels;
+                lineChart.data.datasets[0].data = res.data;
+                lineChart.update();
+
+                // Cập nhật KPI
+                document.getElementById('kpiDoanhThu').textContent =
+                    new Intl.NumberFormat('vi-VN').format(res.tongDoanhThu) + ' ₫';
+                document.getElementById('kpiTongDon').textContent    = res.tongDonHang;
+                document.getElementById('kpiHoanThanh').textContent  = res.donHoanThanh;
+                document.getElementById('kpiChorDuyet').textContent  = res.donChorDuyet;
+
+                // Cập nhật tiêu đề
+                document.getElementById('chartTitle').textContent =
+                    `— Tháng ${thang}/${nam}`;
+
+                // Highlight tháng trên bar chart
+                barChart.data.datasets[0].backgroundColor =
+                    barChart.data.labels.map((_, i) =>
+                        i === (parseInt(thang) - 1) ? '#ca1515' : 'rgba(202,21,21,0.3)');
+                barChart.update();
+            });
+    });
+    </script>
+}
