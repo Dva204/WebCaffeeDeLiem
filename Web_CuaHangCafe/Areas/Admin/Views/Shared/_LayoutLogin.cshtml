@@ -1,0 +1,28 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>@ViewData["Title"] | Đăng nhập</title>
+    <link rel="shortcut icon" href="~/favicon.ico" />
+
+    <!--Bootstrap-->
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" type="text/css">
+
+    <!--Font Awesome-->
+    <link rel="stylesheet" href="~/lib/fontawesome/css/all.min.css" type="text/css">
+
+    <!--CSS-->
+    <link rel="stylesheet" href="~/css/style-admin.css" type="text/css" asp-append-version="true">
+</head>
+<body>
+    @RenderBody()
+
+    <!--JS-->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
+    @RenderSection("Scripts", required: false);
+</body>
+</html>

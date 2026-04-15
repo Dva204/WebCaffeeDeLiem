@@ -233,27 +233,39 @@ namespace Web_CuaHangCafe.Controllers
             }
 
             // ─── Xử lý khách hàng ────────────────────────────────────────
-            //var customer = _context.TbKhachHangs
-            //    .FirstOrDefault(x => x.SdtkhachHang != null && x.SdtkhachHang == phoneNumber);
+            var userEmail = HttpContext.Session.GetString("UserEmail");
+            TbKhachHang customer = null;
 
-            //if (customer == null)
-            //{
-                var customer = new TbKhachHang
+            // Nếu đang đăng nhập, sử dụng thông tin khách hàng hiện tại
+            if (!string.IsNullOrEmpty(userEmail))
+            {
+                customer = _context.TbKhachHangs
+                    .FirstOrDefault(k => k.Email == userEmail);
+
+                if (customer != null)
                 {
-                    Id = Guid.NewGuid(),   // ← dùng Guid mới trực tiếp, không dùng biến ngoài
+                    // Cập nhật thông tin nếu khác
+                    customer.TenKhachHang = customerName;
+                    customer.SdtkhachHang = phoneNumber;
+                    customer.DiaChi = address;
+                    _context.SaveChanges();
+                }
+            }
+
+            // Nếu không đăng nhập hoặc không tìm thấy, tạo khách hàng mới
+            if (customer == null)
+            {
+                customer = new TbKhachHang
+                {
+                    Id = Guid.NewGuid(),
                     TenKhachHang = customerName,
                     SdtkhachHang = phoneNumber,
-                    DiaChi = address
+                    DiaChi = address,
+                    Email = userEmail // Lưu email nếu có
                 };
                 _context.TbKhachHangs.Add(customer);
                 _context.SaveChanges();
-            //}
-            //else
-            //{
-            //    customer.TenKhachHang = customerName;
-            //    customer.DiaChi = address;
-            //    _context.SaveChanges();
-            //}
+            }
 
             // ─── Tạo hoá đơn ─────────────────────────────────────────────
             var order = new TbHoaDonBan
@@ -262,7 +274,7 @@ namespace Web_CuaHangCafe.Controllers
                 SoHoaDon = random.Next(1, 100000).ToString(),
                 NgayBan = DateTime.Now,
                 TongTien = tongSauGiam,
-                CustomerId = customer.Id,   // ← luôn dùng customer.Id, tránh nhầm biến
+                CustomerId = customer.Id,
                 MaVoucher = maVoucher,
                 TrangThai = "đã đặt",
                 DiaChiGiaoHang = address,
@@ -285,13 +297,13 @@ namespace Web_CuaHangCafe.Controllers
                     MaHoaDon = orderId,
                     MaSanPham = cartItem.MaSp,
                     GiaBan = cartItem.DonGia,
-                    GiamGia = (int?)giamGiaSanPham,   // ← decimal thẳng, không cast lòng vòng
+                    GiamGia = (int?)giamGiaSanPham,
                     SoLuong = cartItem.SoLuong,
                     ThanhTien = cartItem.ThanhTien
                 };
             }).ToList();
 
-            _context.TbChiTietHoaDonBans.AddRange(chiTietList);  // ← AddRange thay vì Add từng cái
+            _context.TbChiTietHoaDonBans.AddRange(chiTietList);
             _context.SaveChanges();
 
             // ─── Xoá session ─────────────────────────────────────────────
