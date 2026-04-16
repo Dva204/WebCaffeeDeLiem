@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Web_CuaHangCafe.Data;
 using Web_CuaHangCafe.Models;
@@ -62,6 +62,10 @@ namespace Web_CuaHangCafe.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Create(TbKhachHang khachHang)
         {
+            if (khachHang.Id == Guid.Empty)
+            {
+                khachHang.Id = Guid.NewGuid();
+            }
             _context.TbKhachHangs.Add(khachHang);
             _context.SaveChanges();
 
@@ -73,7 +77,7 @@ namespace Web_CuaHangCafe.Areas.Admin.Controllers
         [Route("Edit")]
         [Authentication]
         [HttpGet]
-        public IActionResult Edit(int id, string name)
+        public IActionResult Edit(Guid id, string name)
         {
             var khachHang = _context.TbKhachHangs.Find(id);
             ViewBag.name = name;
@@ -98,22 +102,29 @@ namespace Web_CuaHangCafe.Areas.Admin.Controllers
         [Route("Delete")]
         [Authentication]
         [HttpGet]
-        public IActionResult Delete(string id)
+        public IActionResult Delete(Guid id)
         {
             TempData["Message"] = "";
 
-            var hoaDon = _context.TbHoaDonBans.Where(x => x.MaHoaDon == Guid.Parse(id)).ToList();
+            var hasInvoices = _context.TbHoaDonBans.Any(x => x.CustomerId == id);
 
-            if (hoaDon.Count() > 0)
+            if (hasInvoices)
             {
-                TempData["Message"] = "Xoá không thành công";
+                TempData["Message"] = "Xoá không thành công: Khách hàng đã có hóa đơn";
                 return RedirectToAction("Index", "Clients");
             }
 
-            _context.Remove(_context.TbKhachHangs.Find(id));
-            _context.SaveChanges();
-
-            TempData["Message"] = "Xoá thành công";
+            var khachHang = _context.TbKhachHangs.Find(id);
+            if (khachHang != null)
+            {
+                _context.TbKhachHangs.Remove(khachHang);
+                _context.SaveChanges();
+                TempData["Message"] = "Xoá thành công";
+            }
+            else
+            {
+                TempData["Message"] = "Khách hàng không tồn tại";
+            }
 
             return RedirectToAction("Index", "Clients");
         }

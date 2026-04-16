@@ -1,4 +1,4 @@
-﻿@model Web_CuaHangCafe.Models.TbSanPham
+@model Web_CuaHangCafe.ViewModels.CreateProductViewModel
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 
 @{
@@ -18,14 +18,8 @@
 
 <hr />
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-6">
         <form asp-action="Create" enctype="multipart/form-data">
-            <div class="col-lg-6">
-
-            </div>
-            <div class="col-lg-6">
-
-            </div>
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label class="control-label">Tên sản phẩm</label>
@@ -39,14 +33,14 @@
             </div>
             <div class="form-group">
                 <label class="control-label">Mô tả</label>
-                <input asp-for="MoTa" class="form-control" />
+                <textarea asp-for="MoTa" class="form-control" rows="3"></textarea>
                 <span asp-validation-for="MoTa" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label class="control-label">Hình ảnh</label>
-                <input asp-for="HinhAnh" type="file" class="form-control" id="HinhAnh" onchange="previewImage()" />
+                <input asp-for="HinhAnh" type="file" class="form-control" id="HinhAnhInput" onchange="previewImage()" />
                 <span asp-validation-for="HinhAnh" class="text-danger"></span>
-                <img id="imgPreview" style="width:100%;" />
+                <img id="imgPreview" style="max-width:200px; margin-top:10px; display:none;" />
             </div>
             <div class="form-group">
                 <label class="control-label">Ghi chú</label>
@@ -55,7 +49,8 @@
             </div>
             <div class="form-group">
                 <label class="control-label">Loại sản phẩm</label>
-                <select asp-for="MaNhomSp" class="form-control" asp-items="ViewBag.MaNhomSp"></select>
+                <select asp-for="MaLoaiSanPham" class="form-control" asp-items="ViewBag.MaNhomSp"></select>
+                <span asp-validation-for="MaLoaiSanPham" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Thêm" class="btn btn-primary" />
@@ -70,7 +65,7 @@
 
 <script type="text/javascript">
     function previewImage() {
-        var fileInput = document.getElementById("HinhAnh");
+        var fileInput = document.getElementById("HinhAnhInput");
         var imgPreview = document.getElementById("imgPreview");
 
         if (fileInput.files && fileInput.files[0]) {
